@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>まなびめぐる</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<!-- ?v= はキャッシュ対策。style.css / script.js / i18n.js を変更したら数字を上げること -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+<link rel="stylesheet" href="style.css?v=30">
+</head>
+<body>
+
+<!-- 起動時のオープニング。タップかタイマーで閉じる -->
+<div id="splash" class="splash">
+  <img class="splash-image" src="assets/opening/splash.jpg" alt="">
+  <div class="splash-veil"></div>
+  <div class="splash-body">
+    <h1 class="splash-title" data-i18n="home.title"></h1>
+    <p class="splash-tap" data-i18n="splash.tap"></p>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- ステータスバー：どの画面でも常に表示 -->
+  <div class="status-bar" id="status-bar">
+    <div class="status-bar-avatar" id="status-bar-avatar"></div>
+    <div class="status-bar-info">
+      <span class="status-bar-grade" id="status-bar-grade">小学3年生</span>
+      <span class="status-bar-lv" id="status-bar-lv">Lv.0</span>
+    </div>
+    <button id="btn-sound-toggle" type="button" class="status-bar-sound" data-i18n-aria="common.sound">🔊</button>
+    <div class="status-bar-points">
+      <span class="status-bar-points-icon">🎰</span>
+      <span id="status-bar-points-value">0</span>
+    </div>
+  </div>
+
+  <!-- ガイドキャラ：どの画面でも常に表示 -->
+  <div class="guide-box">
+    <div class="guide-character" id="guide-character"></div>
+    <div class="guide-bubble" id="guide-bubble">こんにちは！いっしょに べんきょうしよう！</div>
+  </div>
+
+  <!-- ログイン（保護者） -->
+  <section id="screen-login" class="screen">
+    <h2 data-i18n="auth.loginTitle"></h2>
+
+    <!-- 未登録でそのまま試せる導線。初めて来た人がここで離脱しないよう、ログインより前に置く -->
+    <div class="guest-entry">
+      <button type="button" id="btn-login-guest" class="btn-primary btn-guest" data-i18n="auth.tryAsGuest"></button>
+      <p class="guest-note" data-i18n="auth.guestNotice"></p>
+    </div>
+
+    <p class="sub" data-i18n="auth.loginSub"></p>
+    <div class="profile-create-box">
+      <label class="profile-field-label" for="login-email-input" data-i18n="auth.emailLabel"></label>
+      <input type="email" id="login-email-input" class="profile-name-input" autocomplete="email" inputmode="email">
+      <label class="profile-field-label" for="login-password-input" data-i18n="auth.passwordLabel"></label>
+      <input type="password" id="login-password-input" class="profile-name-input" autocomplete="current-password">
+      <p id="login-feedback" class="backup-feedback"></p>
+      <div class="profile-create-actions">
+        <button type="button" id="btn-login-submit" class="btn-primary" data-i18n="auth.loginSubmit"></button>
+        <button type="button" id="btn-login-forgot" class="btn-link" data-i18n="auth.forgotPassword"></button>
+        <button type="button" id="btn-login-to-signup" class="btn-secondary" data-i18n="auth.needAccount"></button>
+        <button type="button" id="btn-login-back-to-guest" class="btn-link hidden" data-i18n="auth.backToGuest"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 新規登録（保護者） -->
+  <section id="screen-signup" class="screen">
+    <h2 data-i18n="auth.signupTitle"></h2>
+    <p class="sub" data-i18n="auth.signupSub"></p>
+    <div class="profile-create-box">
+      <label class="profile-field-label" for="signup-email-input" data-i18n="auth.emailLabel"></label>
+      <input type="email" id="signup-email-input" class="profile-name-input" autocomplete="email" inputmode="email">
+      <label class="profile-field-label" for="signup-password-input" data-i18n="auth.passwordLabel"></label>
+      <input type="password" id="signup-password-input" class="profile-name-input" autocomplete="new-password">
+      <p class="auth-note" data-i18n="auth.passwordHint"></p>
+      <p id="signup-feedback" class="backup-feedback"></p>
+      <div class="profile-create-actions">
+        <button type="button" id="btn-signup-submit" class="btn-primary" data-i18n="auth.signupSubmit"></button>
+        <button type="button" id="btn-signup-to-login" class="btn-secondary" data-i18n="auth.haveAccount"></button>
+        <button type="button" id="btn-signup-back-to-guest" class="btn-link hidden" data-i18n="auth.backToGuest"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- だれがあそぶ？（プロフィール選択） -->
+  <section id="screen-profile-select" class="screen">
+    <h2 data-i18n="profile.selectTitle"></h2>
+    <p class="sub" data-i18n="profile.selectSub"></p>
+    <p class="sub profile-limit-note hidden" id="profile-limit-note"></p>
+    <div class="profile-list" id="profile-list"></div>
+  </section>
+
+  <!-- プロフィール作成 -->
+  <section id="screen-profile-create" class="screen">
+    <h2 data-i18n="profile.createTitle"></h2>
+    <p class="sub" data-i18n="profile.createSub"></p>
+    <div class="profile-create-box">
+      <label class="profile-field-label" for="profile-name-input" data-i18n="profile.nameLabel"></label>
+      <input type="text" id="profile-name-input" class="profile-name-input" maxlength="8" autocomplete="off">
+      <p id="profile-create-feedback" class="backup-feedback"></p>
+      <div class="profile-create-actions">
+        <button type="button" id="btn-profile-create-ok" class="btn-primary" data-i18n="profile.createOk"></button>
+        <button type="button" id="btn-profile-create-cancel" class="btn-secondary" data-i18n="common.back"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ホーム画面：年齢（レベル）選択 -->
+  <section id="screen-home" class="screen active">
+    <div class="hero-card">
+      <div class="hero-card-shine"></div>
+      <span class="hero-date" id="hero-date"></span>
+      <h1 class="hero-title" id="hero-title"></h1>
+      <p class="hero-sub" data-i18n="home.heroSub"></p>
+    </div>
+
+    <div class="week-chart-card">
+      <div class="week-chart-head">
+        <span class="week-chart-title" data-i18n="home.weekTitle"></span>
+        <span class="week-chart-total" id="week-chart-total">0pt</span>
+      </div>
+      <div class="week-chart" id="week-chart"></div>
+    </div>
+
+    <div class="home-status-card">
+      <div class="level-badge-slot" id="home-rank-badge"></div>
+      <div class="home-status-info">
+        <span class="home-status-grade" id="home-status-grade"></span>
+        <span class="home-status-rank" id="home-status-rank"></span>
+      </div>
+      <div class="home-status-points">
+        <span class="label" data-i18n="gacha.points"></span>
+        <span class="value" id="home-stamps"></span>
+      </div>
+    </div>
+
+    <button id="btn-start-study" class="btn-primary" data-i18n="home.startStudy"></button>
+    <button type="button" class="btn-gacha-mini" id="btn-gacha-home" data-i18n="home.drawGacha"></button>
+
+    <!-- 公式YouTube。アプリの外に出るので、出ることが分かる書き方にしている -->
+    <a class="youtube-link" href="https://www.youtube.com/@manabimeguru" data-i18n-href="youtube.url" target="_blank" rel="noopener noreferrer">
+      <span class="youtube-link-icon" aria-hidden="true">▶</span>
+      <span class="youtube-link-text" data-i18n="youtube.linkHome"></span>
+      <span class="youtube-link-note" data-i18n="youtube.external"></span>
+    </a>
+  </section>
+
+  <!-- せってい画面 -->
+  <section id="screen-settings" class="screen">
+    <h2 data-i18n="settings.title"></h2>
+    <p class="sub" data-i18n="settings.sub"></p>
+    <div class="settings-box" id="settings-grade-list"></div>
+
+    <!-- ことば（表示言語）。言語名はその言語自身で書くので、読めない言語の画面からでも
+         自分の言語を見つけられる。初回は navigator.languages から推測している。
+         単一言語で配るデプロイ（FORCED_LOCALE あり）では、この囲みごと隠す -->
+    <div id="settings-language-row">
+      <h3 class="settings-section-title" data-i18n="settings.languageTitle"></h3>
+      <p class="sub" data-i18n="settings.languageDesc"></p>
+      <div class="settings-box" id="settings-language"></div>
+    </div>
+
+    <h3 class="settings-section-title" data-i18n="settings.yearStartTitle"></h3>
+    <p class="sub" data-i18n="settings.yearStartDesc"></p>
+    <div class="settings-box" id="settings-year-start"></div>
+
+    <h3 class="settings-section-title" data-i18n="profile.settingsTitle"></h3>
+    <p class="sub" id="profile-current-line"></p>
+    <div class="backup-actions">
+      <button type="button" id="btn-profile-switch" class="btn-secondary" data-i18n="profile.switch"></button>
+      <button type="button" id="btn-profile-manage" class="btn-secondary" data-i18n="profile.manage"></button>
+    </div>
+
+    <h3 class="settings-section-title" data-i18n="auth.accountTitle"></h3>
+    <p class="sub" id="auth-account-line"></p>
+    <!-- おためし中だけ出す。登録するとカードとポイントがそのまま引き継がれることを伝える -->
+    <!-- おためし中だけ出す警告。良い面（引き継げる）だけでなく、
+         登録しないと失われうることも伝える。長く遊んだあとに消えるのが最悪の体験のため -->
+    <p class="guest-data-warning hidden" id="auth-guest-warning" data-i18n="auth.guestDataWarning"></p>
+    <p class="sub guest-prompt hidden" id="auth-guest-prompt" data-i18n="auth.guestSignupPrompt"></p>
+
+    <!-- メールアドレス未確認のときだけ出す。年額の更新前通知が届かないため確認を促すが、
+         アプリの利用自体は止めない（登録直後に何もできないと離脱するため） -->
+    <div class="verify-box hidden" id="auth-verify-box">
+      <p class="verify-text" data-i18n="auth.verifyNotice"></p>
+      <div class="backup-actions">
+        <button type="button" id="btn-resend-verify" class="btn-secondary" data-i18n="auth.verifyResend"></button>
+        <button type="button" id="btn-check-verified" class="btn-secondary" data-i18n="auth.verifyCheck"></button>
+      </div>
+      <p id="verify-feedback" class="backup-feedback"></p>
+    </div>
+
+    <div class="backup-actions" id="auth-guest-actions">
+      <button type="button" id="btn-guest-signup" class="btn-primary hidden" data-i18n="auth.guestSignup"></button>
+      <button type="button" id="btn-guest-login" class="btn-secondary hidden" data-i18n="auth.guestLogin"></button>
+      <button type="button" id="btn-account-logout" class="btn-secondary" data-i18n="auth.logout"></button>
+    </div>
+    <p id="auth-sync-feedback" class="backup-feedback"></p>
+
+    <h3 class="settings-section-title" data-i18n="plan.title"></h3>
+    <p class="sub" id="plan-current-line"></p>
+    <div class="plan-box" id="settings-plan"></div>
+
+    <h3 class="settings-section-title" data-i18n="settings.backupTitle"></h3>
+    <p class="sub" data-i18n="settings.backupDesc"></p>
+    <div class="backup-box">
+      <div class="backup-actions">
+        <button type="button" id="btn-backup-export" class="btn-secondary" data-i18n="settings.backupExport"></button>
+        <button type="button" id="btn-backup-import" class="btn-secondary" data-i18n="settings.backupImport"></button>
+      </div>
+      <input type="file" id="backup-file-input" accept="application/json,.json" class="hidden">
+      <p id="backup-feedback" class="backup-feedback"></p>
+      <div id="backup-confirm-box" class="backup-confirm-box hidden">
+        <p id="backup-confirm-text"></p>
+        <div class="backup-actions">
+          <button type="button" id="btn-backup-confirm-yes" class="btn-secondary" data-i18n="settings.backupConfirmYes"></button>
+          <button type="button" id="btn-backup-confirm-no" class="btn-secondary" data-i18n="settings.backupConfirmNo"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 科目選択画面 -->
+  <section id="screen-subject" class="screen">
+    <h2 id="subject-title"></h2>
+    <p class="sub" data-i18n="subject.pick"></p>
+    <div class="level-cards">
+      <button class="level-card" data-subject="math">
+        <div class="emoji">🔢</div>
+        <div class="level-title" data-i18n="subject.math"></div>
+        <div class="level-desc" data-i18n="subject.mathDesc"></div>
+      </button>
+      <button class="level-card" data-subject="japanese">
+        <div class="emoji">📖</div>
+        <div class="level-title" data-i18n="subject.japanese"></div>
+        <div class="level-desc" data-i18n="subject.japaneseDesc"></div>
+      </button>
+      <button class="level-card" data-subject="english" id="subject-english">
+        <div class="emoji">🔤</div>
+        <div class="level-title" data-i18n="subject.english"></div>
+        <div class="level-desc" data-i18n="subject.englishDesc"></div>
+      </button>
+    </div>
+  </section>
+
+  <!-- ぶんや選択画面 -->
+  <section id="screen-category" class="screen">
+    <h2 id="category-title"></h2>
+    <p class="sub" data-i18n="category.pick"></p>
+    <div class="category-list" id="category-list"></div>
+    <button id="btn-back-category" class="btn-secondary" data-i18n="common.back"></button>
+  </section>
+
+  <!-- スタート画面 -->
+  <section id="screen-start" class="screen">
+    <h2 id="start-title"></h2>
+
+    <div class="character-box">
+      <div class="level-badge-slot" id="start-char-emoji"></div>
+      <div class="character-title" id="start-char-title"></div>
+      <div class="character-progress">
+        <div class="character-progress-bar" id="start-char-progress"></div>
+      </div>
+      <div class="character-progress-label" id="start-char-progress-label"></div>
+    </div>
+
+    <div class="stamp-card" id="stamp-card"></div>
+    <p class="badge-line" id="badge-line"></p>
+    <button id="btn-begin" class="btn-primary" data-i18n="quiz.start"></button>
+    <button id="btn-back-home-1" class="btn-secondary" data-i18n="common.back"></button>
+  </section>
+
+  <!-- クイズ画面 -->
+  <section id="screen-quiz" class="screen">
+    <div class="quiz-header">
+      <span id="quiz-progress">1 / 10</span>
+      <span id="quiz-stamps"></span>
+    </div>
+    <div class="problem-box">
+      <div id="problem-badge" class="problem-badge"></div>
+      <div id="problem-text" class="problem-text">?</div>
+
+      <button id="btn-hint" type="button" class="btn-hint" data-i18n="quiz.hint"></button>
+      <div id="hint-box" class="hint-box hidden"></div>
+
+      <form id="answer-form">
+        <input type="text" id="answer-input" inputmode="text" autocomplete="off" data-i18n-placeholder="quiz.answerPlaceholder">
+        <button type="submit" class="btn-primary" data-i18n="quiz.submit"></button>
+      </form>
+
+      <div id="choice-buttons" class="choice-buttons hidden"></div>
+
+      <div id="feedback" class="feedback"></div>
+      <div id="explain-box" class="explain-box hidden"></div>
+      <button id="btn-next" class="btn-primary hidden" data-i18n="quiz.next"></button>
+    </div>
+  </section>
+
+  <!-- 結果画面 -->
+  <section id="screen-result" class="screen">
+    <h2 data-i18n="result.title"></h2>
+    <div class="result-box">
+      <p class="result-score" id="result-score"></p>
+      <p class="result-rate" id="result-rate"></p>
+      <div class="stamp-anim" id="stamp-anim"></div>
+      <p class="points-earned-line" id="points-earned-line"></p>
+    </div>
+
+    <button id="btn-share-result" class="btn-primary btn-share" data-i18n="result.share"></button>
+    <p id="result-action-feedback" class="action-feedback"></p>
+    <div id="manual-copy-box" class="manual-copy-box hidden">
+      <textarea id="manual-copy-text" class="manual-copy-textarea" readonly rows="8"></textarea>
+      <p class="manual-copy-hint" data-i18n="share.copyHint"></p>
+    </div>
+    <button id="btn-retry" class="btn-primary" data-i18n="result.retry"></button>
+  </section>
+
+  <!-- ガチャ画面 -->
+  <section id="screen-gacha" class="screen">
+    <div class="gacha-banner">
+      <div class="gacha-banner-shine"></div>
+      <div class="gacha-banner-sparkles"></div>
+      <h2 id="gacha-screen-title" class="gacha-banner-title" data-i18n="gacha.title"></h2>
+      <div class="gacha-points-box">
+        <span class="label" data-i18n="gacha.points"></span>
+        <span id="gacha-points-value" class="value">0</span>
+        <span class="gacha-cost-hint" data-i18n="gacha.cost"></span>
+        <span class="gacha-pity-hint" id="gacha-pity-hint"></span>
+      </div>
+    </div>
+
+    <button id="btn-pull-gacha" class="btn-primary btn-gacha-pull" data-i18n="gacha.pull"></button>
+    <p id="gacha-insufficient-msg" class="gacha-insufficient hidden" data-i18n="gacha.insufficient"></p>
+
+    <div id="gacha-reveal-box" class="gacha-box hidden">
+      <div id="gacha-card-slot"></div>
+    </div>
+
+    <div id="gacha-levelup-box" class="levelup-box hidden">
+      <p class="levelup-text" data-i18n="gacha.rankUp"></p>
+      <div class="level-badge-slot" id="gacha-levelup-emoji"></div>
+      <div class="levelup-title" id="gacha-levelup-title"></div>
+    </div>
+
+  </section>
+
+  <!-- カードずかん画面 -->
+  <section id="screen-collection" class="screen">
+    <h2 data-i18n="collection.title"></h2>
+    <div class="collection-scope" id="collection-scope">
+      <button type="button" class="collection-scope-btn active" data-scope="self" data-i18n="collection.scopeSelf"></button>
+      <button type="button" class="collection-scope-btn" data-scope="family" data-i18n="collection.scopeFamily"></button>
+    </div>
+    <p class="sub" id="collection-count-line"></p>
+    <p class="sub collection-premium-note hidden" id="collection-premium-note"></p>
+    <div class="collection-grid" id="collection-grid"></div>
+
+    <!-- 公式YouTube。図鑑の続きとして動画を見てもらう導線 -->
+    <a class="youtube-link" href="https://www.youtube.com/@manabimeguru" data-i18n-href="youtube.url" target="_blank" rel="noopener noreferrer">
+      <span class="youtube-link-icon" aria-hidden="true">▶</span>
+      <span class="youtube-link-text" data-i18n="youtube.linkCollection"></span>
+      <span class="youtube-link-note" data-i18n="youtube.external"></span>
+    </a>
+
+    <button id="btn-back-from-collection" class="btn-secondary" data-i18n="common.back"></button>
+  </section>
+
+</div>
+
+<!-- 下部タブナビゲーション -->
+<nav class="tab-bar" id="tab-bar">
+  <button type="button" class="tab-bar-btn" data-tab="home">
+    <span class="tab-bar-icon">🏠</span>
+    <span class="tab-bar-label" data-i18n="tab.home"></span>
+  </button>
+  <button type="button" class="tab-bar-btn" data-tab="study">
+    <span class="tab-bar-icon">📖</span>
+    <span class="tab-bar-label" data-i18n="tab.study"></span>
+  </button>
+  <button type="button" class="tab-bar-fab" data-tab="gacha" data-i18n-aria="tab.gachaAria">
+    <span class="tab-bar-fab-icon">🎰</span>
+  </button>
+  <button type="button" class="tab-bar-btn" data-tab="collection">
+    <span class="tab-bar-icon">🎴</span>
+    <span class="tab-bar-label" data-i18n="tab.collection"></span>
+  </button>
+  <button type="button" class="tab-bar-btn" data-tab="settings">
+    <span class="tab-bar-icon">⚙️</span>
+    <span class="tab-bar-label" data-i18n="tab.settings"></span>
+  </button>
+</nav>
+
+<!-- ガチャ演出：画面いっぱいに表示する -->
+<div id="gacha-overlay" class="gacha-overlay hidden" aria-hidden="true">
+  <div class="gacha-overlay-stage" id="gacha-overlay-stage"></div>
+  <p class="gacha-refund" id="gacha-refund"></p>
+  <div class="gacha-overlay-actions">
+    <button id="btn-skip-gacha" type="button" class="btn-skip-gacha hidden" data-i18n="gacha.skip"></button>
+    <button id="btn-close-gacha" type="button" class="btn-close-gacha hidden" data-i18n="gacha.close"></button>
+  </div>
+</div>
+
+<!-- カード拡大表示モーダル -->
+<div id="card-detail-overlay" class="card-detail-overlay hidden">
+  <div class="card-detail-content" id="card-detail-content"></div>
+  <button id="btn-close-card-detail" type="button" class="card-detail-close">✕</button>
+</div>
+
+<!-- Firebase（アカウント同期用）。ビルド工程が無いのでcompat版をローカルから読み込む。
+     CDNの代わりにvendor/以下に置くことで、オフラインでも動作する。
+     firebase 10.13.2 / https://registry.npmjs.org/firebase/-/firebase-10.13.2.tgz -->
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-auth-compat.js"></script>
+<script src="vendor/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js?v=1"></script>
+<script src="i18n.js?v=36"></script>
+<script src="content-ja.js?v=15"></script>
+<script src="content-en.js?v=7"></script>
+<script src="script.js?v=58"></script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manabimeguru | Estudia un poco, conoce a un espíritu.</title>
+<meta name="description" content="App de estudio para niños y niñas de 1º a 6º de Primaria. Resuelve ejercicios de Matemáticas e Inglés y colecciona cartas de los espíritus de las estaciones. Sin registro y sin instalar nada.">
+
+<!-- SNSでの共有プレビュー用。og:image は絶対URLで指定する（相対パスだと一部クローラーがサムネを出せない）。
+     生成元は tools/make-og-image.py --locale es（assets/cards-es/ の実物カードを合成）。
+     カードを差し替えたら作り直すこと。 -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manabimegurues.comagoto.com/lp.html">
+<meta property="og:title" content="Manabimeguru | Estudia un poco, conoce a un espíritu.">
+<meta property="og:description" content="App de estudio para 1º a 6º de Primaria. Resuelve Matemáticas e Inglés y colecciona cartas de los espíritus de las estaciones.">
+<meta property="og:image" content="https://manabimegurues.comagoto.com/assets/og-card-es.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Manabimeguru | Estudia un poco, conoce a un espíritu.">
+<meta name="twitter:description" content="App de estudio para 1º a 6º de Primaria. Resuelve Matemáticas e Inglés y colecciona cartas de los espíritus de las estaciones.">
+<meta name="twitter:image" content="https://manabimegurues.comagoto.com/assets/og-card-es.png">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lp.css?v=5">
+</head>
+<body>
+
+<!-- ① ヒーロー -->
+<header class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap">
+    <img class="hero-figure" src="assets/characters/hanabi-greet.webp" width="260" height="295"
+         alt="Espíritu Hanabi saludando con la mano">
+    <h1>Estudia un poco.<br>Conoce a un <span class="accent">espíritu</span>.</h1>
+    <p class="hero-sub">
+      Manabimeguru es una app de estudio para niños y niñas de 1º a 6º de Primaria.<br>
+      Resuelve ejercicios de Matemáticas e Inglés y colecciona las cartas de los espíritus de las estaciones.
+    </p>
+    <a class="cta-btn" href="index.html" data-cta="hero">Probar ahora <span class="arrow">→</span></a>
+    <p class="cta-micro">Sin registro y sin instalar nada. Funciona en el navegador.</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- ② これは何か -->
+  <section id="what" aria-labelledby="what-h">
+    <div class="wrap">
+      <h2 id="what-h" class="visually-hidden">Qué es</h2>
+      <ul class="fact-list">
+        <li><span class="k">Para quién</span> Niños y niñas de 1º a 6º de Primaria</li>
+        <li><span class="k">Asignaturas</span> Matemáticas e Inglés</li>
+        <li><span class="k">Cómo se usa</span> Se abre en el navegador. No hay que instalar ninguna aplicación</li>
+        <li><span class="k">Dispositivos</span> Tablet, móvil u ordenador</li>
+        <li><span class="k">Para empezar</span> Se puede probar sin registrarse. Si la cosa va en serio, una persona adulta crea una cuenta: así se guarda el progreso y cada hijo o hija tiene su propio perfil</li>
+      </ul>
+      <p class="fact-note">
+        Al indicar el curso, los ejercicios se centran en ese nivel y se mezclan repasos del curso anterior.
+        Además, los tipos de ejercicio van apareciendo poco a poco a lo largo del año,
+        más o menos cuando se dan en el colegio.
+      </p>
+    </div>
+  </section>
+
+  <!-- ③ なぜ続くのか -->
+  <section id="why" aria-labelledby="why-h">
+    <div class="wrap">
+      <span class="eyebrow">Cómo funciona</span>
+      <h2 id="why-h">«Un ejercicio más» sale solo.</h2>
+      <div class="loop">
+        <span class="step">Resuelves</span><span class="arrow">→</span>
+        <span class="step">Ganas puntos</span><span class="arrow">→</span>
+        <span class="step">Sale una carta</span><span class="arrow">→</span>
+        <span class="step">Se llena el álbum</span>
+      </div>
+
+      <div class="card-strip" role="list" aria-label="Algunas cartas de espíritus">
+        <img role="listitem" class="r-N" loading="lazy" width="220" height="294" src="assets/cards-es/n1.webp" alt="Espíritu Hanabi">
+        <img role="listitem" class="r-N" loading="lazy" width="220" height="294" src="assets/cards-es/n2.webp" alt="Burbujita">
+        <img role="listitem" class="r-N" loading="lazy" width="220" height="294" src="assets/cards-es/n3.webp" alt="Gorrión de Feria">
+        <img role="listitem" class="r-N" loading="lazy" width="220" height="294" src="assets/cards-es/n4.webp" alt="Ciervo Volante">
+        <img role="listitem" class="r-N" loading="lazy" width="220" height="294" src="assets/cards-es/n5.webp" alt="Hielo Picado">
+        <img role="listitem" class="r-N" loading="lazy" width="220" height="294" src="assets/cards-es/n6.webp" alt="Chispita de Bengala">
+        <img role="listitem" class="r-N" loading="lazy" width="220" height="294" src="assets/cards-es/n7.webp" alt="Peque Flotador">
+        <img role="listitem" class="r-N" loading="lazy" width="220" height="294" src="assets/cards-es/n8.webp" alt="Pececillo Rojo">
+        <img role="listitem" class="r-R" loading="lazy" width="220" height="294" src="assets/cards-es/r1.webp" alt="Señor del Gran BUM">
+        <img role="listitem" class="r-R" loading="lazy" width="220" height="294" src="assets/cards-es/r2.webp" alt="Espíritu del Oleaje">
+        <img role="listitem" class="r-R" loading="lazy" width="220" height="294" src="assets/cards-es/r3.webp" alt="Chico del Tambor">
+        <img role="listitem" class="r-R" loading="lazy" width="220" height="294" src="assets/cards-es/r4.webp" alt="Capitán Escarabajo">
+        <img role="listitem" class="r-R" loading="lazy" width="220" height="294" src="assets/cards-es/r5.webp" alt="Espíritu del Polo">
+        <img role="listitem" class="r-R" loading="lazy" width="220" height="294" src="assets/cards-es/r6.webp" alt="Luciérnaga Brillo">
+        <img role="listitem" class="r-SR" loading="lazy" width="220" height="294" src="assets/cards-es/sr1.webp" alt="Fuego de Arcoíris">
+        <img role="listitem" class="r-SR" loading="lazy" width="220" height="294" src="assets/cards-es/sr2.webp" alt="Señor del Abismo">
+        <img role="listitem" class="r-SR" loading="lazy" width="220" height="294" src="assets/cards-es/sr3.webp" alt="Bailarina de Verano">
+        <img role="listitem" class="r-SR" loading="lazy" width="220" height="294" src="assets/cards-es/sr4.webp" alt="Princesa de Hielo">
+        <img role="listitem" class="r-UR" loading="lazy" width="220" height="294" src="assets/cards-es/ur1.webp" alt="Dragón de la Montaña">
+        <img role="listitem" class="r-UR" loading="lazy" width="220" height="294" src="assets/cards-es/ur2.webp" alt="Rey de los Espíritus">
+      </div>
+
+      <p style="text-align:center; font-size:13.5px; color:var(--text-muted); margin:-10px 0 24px;">
+        Hay 40 cartas en total. Empiezan con los espíritus del verano y se irán añadiendo por estaciones.<br>
+        Con el plan gratuito se consiguen 28, y están pensadas para que aparezcan tarde o temprano si se sigue jugando.
+      </p>
+
+      <p class="statement">
+        No vamos a prometer que mejoren las notas.<br>
+        <span class="muted">Pero quizá haya que decir «ponte a estudiar» algunas veces menos.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ③.5 学年の中の進み方 -->
+  <section id="pace" aria-labelledby="pace-h">
+    <div class="wrap family-box">
+      <span class="eyebrow">El nivel se ajusta solo</span>
+      <h2 id="pace-h">Un niño de 1º en septiembre<br>y otro de 1º en junio no van por lo mismo.</h2>
+      <p>
+        Aunque los dos estén en «1º de Primaria», entre el comienzo del curso y el final
+        hay un año entero de diferencia en lo que han dado en clase.
+      </p>
+      <p>
+        Manabimeguru no mira solo el curso, sino <strong>por qué mes del curso va</strong>.
+        En 1º, por ejemplo, empieza con sumas, y cuando toca la resta en el colegio,
+        empiezan a salir también restas.
+      </p>
+      <p class="family-note">
+        Solo hay que indicar dos cosas: el curso y el mes en que empieza el año escolar
+        (septiembre en España y en México). A partir de ahí se ajusta solo según la fecha, así que
+        <strong>no hay que estar revisando el nivel cada mes.</strong>
+        También se pueden elegir otros meses de inicio, por si el colegio sigue otro calendario.
+      </p>
+    </div>
+  </section>
+
+  <!-- ④ 信頼ブロック -->
+  <section id="trust" class="trust" aria-labelledby="trust-h">
+    <div class="wrap">
+      <span class="eyebrow">Algo importante</span>
+      <h2 id="trust-h">Hay sobres de cartas,<br>pero no se compran con dinero.</h2>
+      <p class="trust-lead">
+        Las cartas salen de «sobres». Sabemos que esa palabra pone en guardia a muchas familias.
+      </p>
+      <div class="trust-core">
+        <p>En Manabimeguru los sobres solo se abren con los puntos que se ganan estudiando.</p>
+        <p>No se pueden comprar con dinero: esa opción no existe en la app.</p>
+      </div>
+      <ul class="check-list">
+        <li>A los niños no se les muestra ninguna pantalla que les pida pagar</li>
+        <li>No hay publicidad</li>
+        <li>No recogemos datos personales de los niños (solo un apodo y el curso; ni nombre real, ni fecha de nacimiento, ni correo electrónico)</li>
+        <li>La cuenta y cualquier pago se gestionan únicamente desde la cuenta de la persona adulta</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ⑤ 作り手 -->
+  <section id="maker" aria-labelledby="maker-h">
+    <div class="wrap maker">
+      <img class="maker-figure" src="assets/characters/hanabi-think.webp" width="150" height="170"
+           loading="lazy" alt="Espíritu Hanabi pensando con la cabeza ladeada">
+      <div>
+        <span class="eyebrow">Quién está detrás</span>
+        <h2 id="maker-h">Empecé a hacerla<br>para mi hija.</h2>
+      </div>
+      <p>
+        No soy experto en educación. Soy un padre con una hija en Primaria.
+        Empecé a hacer esto dándole vueltas a cómo conseguir que se sentara a estudiar por su cuenta,
+        y la sigo corrigiendo mientras ella la usa cada día.
+      </p>
+      <p>Todavía no tiene la supervisión de especialistas que tienen los materiales de las grandes editoriales. A cambio:</p>
+      <ul class="fact-list">
+        <li>Los ejercicios de <strong>Matemáticas</strong> están repartidos por curso, y dentro del curso van apareciendo según el mes</li>
+        <li>El <strong>Inglés</strong> empieza en 3º, con vocabulario y conversación sencilla</li>
+        <li>Los ejercicios se revisan a diario de forma automática, y los errores que aparecen se corrigen sobre la marcha</li>
+        <li>Cuando una niña o un niño se atasca en algo, reescribimos el enunciado o la pista</li>
+      </ul>
+      <p>Lo que falta, lo iremos añadiendo.</p>
+    </div>
+  </section>
+
+  <!-- ⑥ 料金 -->
+  <section id="pricing" aria-labelledby="pricing-h">
+    <div class="wrap">
+      <span class="eyebrow">Precio</span>
+      <h2 id="pricing-h">Ahora mismo, gratis.</h2>
+      <p class="price-intro">
+        <strong>Todo el contenido de estudio se puede usar gratis.</strong><br>
+        Más adelante habrá un plan Familia, que añadirá perfiles para más hijos e hijas
+        y el resto de las cartas.
+      </p>
+
+      <p class="price-freenote">
+        El plan gratuito <strong>se puede empezar sin crear ninguna cuenta.</strong>
+        Si veis que la cosa continúa, cread una cuenta (también gratis).
+        Las cartas y el progreso se guardan en la nube, y así
+        <strong>no se pierden al cambiar de dispositivo ni al borrar los datos del navegador.</strong>
+      </p>
+
+      <div class="table-scroll">
+        <table class="price-table">
+          <thead>
+            <tr><th scope="col"></th><th scope="col">Gratis</th><th scope="col">Familia</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Matemáticas e Inglés (todos los cursos)</th><td class="yes">Sí</td><td class="yes">Sí</td></tr>
+            <tr><th scope="row">Guardado en la nube<br><span class="price-sub">(hay que crear una cuenta)</span></th><td class="yes">Sí</td><td class="yes">Sí</td></tr>
+            <tr><th scope="row">Perfiles de hijos e hijas</th><td>1</td><td class="yes">Hasta 6</td></tr>
+            <tr><th scope="row">Cartas de espíritus</th><td>28</td><td class="yes">Las 40 y las que vengan</td></tr>
+            <tr><th scope="row">Álbum familiar</th><td>—</td><td class="yes">Sí</td></tr>
+            <tr><th scope="row">Precio</th><td class="plan-price">Gratis</td><td class="plan-price">Próximamente</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="price-lock">
+        El plan Familia todavía no está a la venta. Cuando lo esté, anunciaremos aquí el precio.
+        Hasta entonces se puede usar todo el estudio sin pagar nada.
+      </p>
+    </div>
+  </section>
+
+  <!-- ⑦ よくある質問 -->
+  <section id="faq" aria-labelledby="faq-h">
+    <div class="wrap">
+      <span class="eyebrow">Preguntas frecuentes</span>
+      <h2 id="faq-h">Preguntas frecuentes</h2>
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>¿No acabará jugando en vez de estudiando?</summary>
+          <p>Las cartas solo se consiguen con los puntos que se ganan resolviendo ejercicios. No se puede jugar únicamente a la parte del juego.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>¿Hay que comprar una tablet?</summary>
+          <p>No. Se abre en el navegador de la tablet, el móvil o el ordenador que ya tengáis. Tampoco hay que instalar ninguna aplicación.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>¿Hay que cambiar el nivel a menudo?</summary>
+          <p>No. Basta con elegir al principio el curso y el mes en que empieza el año escolar (septiembre en España y en México). A partir de ahí, los tipos de ejercicio van apareciendo solos según la fecha. Si el colegio sigue otro calendario, se pueden elegir otros meses de inicio.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>¿Hay publicidad?</summary>
+          <p>No.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>¿Hay que dar datos personales del niño o la niña?</summary>
+          <p>No. De cada hijo o hija solo guardamos un apodo y el curso. No pedimos nombre real, ni fecha de nacimiento, ni correo electrónico.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Si cambio de móvil o de navegador, ¿se pierde todo?</summary>
+          <p><strong>Si habéis creado una cuenta, no se pierde.</strong> Las cartas y el progreso se guardan solos en la nube, y basta con entrar con la misma cuenta desde el dispositivo nuevo. Crear la cuenta es gratis.</p>
+          <p>En cambio, <strong>si se usa solo en modo de prueba sin registrarse, todo queda guardado únicamente en ese navegador.</strong> Al borrar los datos del navegador o al cambiar de dispositivo no se puede recuperar. Si después de probar unos días os parece que va a continuar, lo mejor es crear la cuenta pronto: las cartas conseguidas hasta ese momento se conservan.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>¿Está también en japonés?</summary>
+          <p>Sí. La versión japonesa incluye además Lengua japonesa y está en otra dirección. Esta versión en español tiene Matemáticas e Inglés.</p>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ⑧ 最後のCTA -->
+<section class="closing" aria-labelledby="closing-h">
+  <div class="wrap">
+    <img class="closing-figure" src="assets/characters/hanabi-happy.webp" width="150" height="170"
+         loading="lazy" alt="Espíritu Hanabi sonriendo">
+    <h2 id="closing-h">Pruébalo un momento.</h2>
+    <p class="hero-sub" style="color:var(--text-muted); max-width:34ch;">No hace falta registrarse ni instalar nada.</p>
+    <a class="cta-btn" href="index.html" data-cta="closing">Probar ahora <span class="arrow">→</span></a>
+  </div>
+</section>
+
+<footer>
+  <p>Manabimeguru</p>
+</footer>
+
+<script>
+  // CTAクリックの計測。日本語版の lp.html と同じ作りにしてある。
+  // 計測手段が決まったら、この関数をそのサービスの呼び出しに差し替える。
+  document.querySelectorAll('[data-cta]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      if (typeof window.trackEvent === 'function') {
+        window.trackEvent('cta_click', { position: el.dataset.cta });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
