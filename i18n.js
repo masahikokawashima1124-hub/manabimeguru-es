@@ -129,6 +129,7 @@ const LOCALES = {
     "plan.title": "🎫 プラン",
     "plan.freeLine": "いまは 無料プランです",
     "plan.paidLine": "ファミリープランを ご利用中です 🎉",
+    "plan.benefitIntro": "アップグレードすると、こんなことができます：",
     "plan.benefit1": "お子さんの登録が {n}人まで",
     "plan.benefit2": "せいれいカードが 全{n}種そろう（SR・URも）",
     "plan.benefit3": "かぞくのずかん（家族みんなで集めた図鑑）",
@@ -316,6 +317,22 @@ const LOCALES = {
       "さんすう と こくご、どっちにする？",
       "とくいなほうから やってみよう！",
     ],
+    "guide.category": [
+      "どのもんだいに ちょうせんする？",
+      "すきなぶんやから やってみよう！",
+    ],
+    "guide.gacha": [
+      "どの せいれいに あえるかな？",
+      "いいカードが でると いいね！",
+    ],
+    "guide.collection": [
+      "あつめた せいれいを みてみよう！",
+      "ぜんぶ あつめられるかな？",
+    ],
+    "guide.settings": [
+      "せっていは おうちの人と いっしょにね",
+      "こまったら ここを みてね",
+    ],
     "guide.start": [
       "じゅんびは いいかな？10もん がんばろう！",
       "がんばると ガチャが ひけるよ。せいれいずかんを ふやそう！",
@@ -390,8 +407,18 @@ const LOCALES = {
     "math.mul2.explain": "{a} × {b} は {a}を {b}回 たすことだから、{terms}＝{product}",
     "math.add3.hint": "位をそろえて、一の位からじゅんばんに たしざんしてみよう",
     "math.add3.explain": "{a} は {aParts}、{b} は {bParts}。同じ位どうしを たすと {sum} になるよ",
-    "math.sub3.hint": "大きい位から順にひき算しよう。くり下がりに注意",
-    "math.sub3.explain": "{a} － {b} = {diff}。たしかめ算: {diff} ＋ {b} を計算して {a} に なるか かくにんしよう",
+    // ⚠️ ひき算はくり下がりがあるので「一の位から」が正しい。
+    //    以前は「大きい位から順に」と書いてあり、解説（subtractStepsExplain は一の位から）
+    //    ・math.add3.hint・スペイン語版のいずれとも矛盾していた（2026-08-13 修正）。
+    "math.sub3.hint": "位をそろえて、一の位からじゅんばんに ひき算してみよう。くり下がりに注意",
+    "math.placeOnes": "一の位",
+    "math.placeTens": "十の位",
+    "math.placeHundreds": "百の位",
+    "math.placeThousands": "千の位",
+    "math.sub3.step": "{place}：{top}－{bot}＝{digit}",
+    "math.sub3.stepBorrowIn": "{place}：上の位に かした分を ひいて {top}－{bot}＝{digit}",
+    "math.sub3.stepBorrowOut": "{place}：{top}－{bot} は たりないので、上の位から1くり下げて {borrowedTop}－{bot}＝{digit}",
+    "math.sub3.final": "位をそろえて 下の位から じゅんに計算すると、{a}－{b}＝{diff}",
     "math.mul3.hint": "{a}を 十の位と一の位に分けて、それぞれ {b}を かけてみよう",
     "math.mul3.explain": "{tens}×{b}＝{tensPart}、{ones}×{b}＝{onesPart}。あわせて {tensPart}＋{onesPart}＝{product}",
     "math.div3.hint": "{b}のだんの 九九で こたえが {a} になる数を さがそう",
@@ -511,7 +538,9 @@ const LOCALES = {
     "math.decimalDiv5.explain": "{a}を 10ばいすると {a10}。{inner}。10で わって もとに もどすと {q}",
     "math.fractionAddDiff5.text": "{n1}/{d1} ＋ {n2}/{d2} = ？（やくぶんしてね）",
     "math.fractionAddDiff5.hint": "分母を そろえて（通分して）から たしざんしよう",
-    "math.fractionAddDiff5.explain": "通分すると {a}/{den} ＋ {b}/{den} ＝ {num}/{den}。やくぶんして {reduced}",
+    // 末尾に句点を置かない。約分が起きたときだけ reduceExplainSuffix が
+    //「。…やくぶんすると …」を足す（fractionMul6・fractionSame3 と同じ作り）。
+    "math.fractionAddDiff5.explain": "通分すると {a}/{den} ＋ {b}/{den} ＝ {num}/{den}",
     "math.average5.text": "{values} の {n}つの 数の 平均は いくつ？",
     "math.average5.hint": "平均 ＝ ぜんぶを たした数 ÷ 個数",
     "math.average5.explain": "ぜんぶ たすと {sum}。{n}で わって {avg}",
@@ -730,6 +759,7 @@ const LOCALES = {
     "plan.title": "🎫 Plan",
     "plan.freeLine": "Ahora tiene el plan gratuito",
     "plan.paidLine": "Tiene el plan Familia activo 🎉",
+    "plan.benefitIntro": "Al mejorar el plan, podrá:",
     "plan.benefit1": "Hasta {n} perfiles de niños y niñas",
     "plan.benefit2": "Las {n} cartas de espíritus al completo (también SR y UR)",
     "plan.benefit3": "Álbum familiar (todas las cartas reunidas en familia)",
@@ -924,6 +954,22 @@ const LOCALES = {
       "¿Matemáticas o inglés?",
       "¡Empieza por lo que más te guste!",
     ],
+    "guide.category": [
+      "¿Qué tipo de preguntas quieres practicar?",
+      "¡Elige el que más te guste!",
+    ],
+    "guide.gacha": [
+      "¿Qué espíritu te tocará?",
+      "¡Ojalá te salga una carta genial!",
+    ],
+    "guide.collection": [
+      "¡Mira los espíritus que has reunido!",
+      "¿Podrás conseguirlos todos?",
+    ],
+    "guide.settings": [
+      "Mira los ajustes con una persona adulta",
+      "Si tienes dudas, echa un vistazo aquí",
+    ],
     "guide.start": [
       "¿Preparado? ¡Vamos con 10 preguntas!",
       "Si te esfuerzas conseguirás sobres. ¡A llenar el álbum!",
@@ -998,7 +1044,14 @@ const LOCALES = {
     "math.add3.hint": "Coloca las cifras en columna y suma empezando por las unidades.",
     "math.add3.explain": "{a} es {aParts} y {b} es {bParts}. Sumando cada columna sale {sum}.",
     "math.sub3.hint": "Resta empezando por las unidades y ojo con lo que te llevas.",
-    "math.sub3.explain": "{a} − {b} = {diff}. Para comprobarlo, calcula {diff} + {b} y mira si sale {a}.",
+    "math.placeOnes": "las unidades",
+    "math.placeTens": "las decenas",
+    "math.placeHundreds": "las centenas",
+    "math.placeThousands": "los millares",
+    "math.sub3.step": "{place}: {top} − {bot} = {digit}",
+    "math.sub3.stepBorrowIn": "{place}: restando lo que le prestaste a la columna anterior, {top} − {bot} = {digit}",
+    "math.sub3.stepBorrowOut": "{place}: como {top} − {bot} no alcanza, te llevas 1 prestado de la columna siguiente: {borrowedTop} − {bot} = {digit}",
+    "math.sub3.final": "Alineando las cifras y calculando desde las unidades: {a} − {b} = {diff}",
     "math.mul3.hint": "Separa {a} en decenas y unidades y multiplica cada parte por {b}.",
     "math.mul3.explain": "{tens}×{b}={tensPart} y {ones}×{b}={onesPart}. Juntando: {tensPart}+{onesPart}={product}.",
     "math.div3.hint": "Busca en la tabla del {b} el número que da {a}.",
@@ -1120,7 +1173,7 @@ const LOCALES = {
     "math.decimalDiv5.explain": "{a} por 10 es {a10}. {inner}. Dividiendo entre 10 vuelves a {q}.",
     "math.fractionAddDiff5.text": "{n1}/{d1} + {n2}/{d2} = ? (simplifica el resultado)",
     "math.fractionAddDiff5.hint": "Pon el mismo denominador en las dos fracciones y después suma.",
-    "math.fractionAddDiff5.explain": "Con el mismo denominador: {a}/{den} + {b}/{den} = {num}/{den}. Simplificando queda {reduced}.",
+    "math.fractionAddDiff5.explain": "Con el mismo denominador: {a}/{den} + {b}/{den} = {num}/{den}",
     "math.average5.text": "¿Cuál es la media de estos {n} números: {values}?",
     "math.average5.hint": "Media = suma de todos ÷ cuántos son",
     "math.average5.explain": "La suma es {sum}. Dividiendo entre {n} sale {avg}.",

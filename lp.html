@@ -287,9 +287,13 @@
   <p>Manabimeguru</p>
 </footer>
 
+<!-- アクセス計測（Firebase Analytics）。日本語版の lp.html と同じ作りにしてある -->
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-analytics-compat.js"></script>
+<script src="lp-analytics.js"></script>
+
 <script>
-  // CTAクリックの計測。日本語版の lp.html と同じ作りにしてある。
-  // 計測手段が決まったら、この関数をそのサービスの呼び出しに差し替える。
+  // CTAクリックの計測。window.trackEvent は lp-analytics.js が定義する。
   document.querySelectorAll('[data-cta]').forEach(function (el) {
     el.addEventListener('click', function () {
       if (typeof window.trackEvent === 'function') {
