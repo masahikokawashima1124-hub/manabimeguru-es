@@ -853,8 +853,14 @@ const LOCALES = {
     "testimonial.failed": "No se pudo enviar. Inténtalo de nuevo más tarde",
 
     // --- プラン（無料→ファミリー） ---
-    // ⚠️ 価格はまだ日本円のまま（Stripe の Payment Link が JPY 建てのため）。
-    //    スペイン語圏向けの価格は未定（es-handoff.md §6・account-design.md §8-2）。
+    // 価格は Stripe の価格オブジェクトが正典（2026-09-06 に実物で確認）。
+    //   月: price_1UCJjbLlcTm4KyBw1FjtDHmz = €7.99 / 月・EUR・外税
+    //   年: price_1UCJnoLlcTm4KyBwA8I5CPPM = €79.90 / 年・EUR・外税
+    // ⚠️ **外税**なので、顧客の支払額は表示額＋現地の税（スペインならIVA 21%で €9.67）。
+    //    金額を「+ impuestos」抜きで書くと、購入直前の画面で実際の請求額と食い違う。
+    // ⚠️ 表記はスペイン語圏の慣習（カンマ小数・記号後置・数字と記号の間に空白）。
+    // ⚠️ 価格を変えたら Stripe 側の価格オブジェクトも作り直しになる（account-design.md §10-11）。
+    //    ここだけ書き換えても請求額は変わらない。
     "plan.title": "🎫 Plan",
     "plan.freeLine": "Ahora tiene el plan gratuito",
     "plan.paidLine": "Tiene el plan Familia activo 🎉",
@@ -863,8 +869,8 @@ const LOCALES = {
     "plan.benefit2": "Las {n} cartas de espíritus al completo (también SR y UR)",
     "plan.benefit3": "Álbum familiar (todas las cartas reunidas en familia)",
     "plan.gachaPromise": "Los sobres de cartas no se pueden comprar con dinero. Solo se consiguen estudiando.",
-    "plan.monthly": "Mensual: 1.480 JPY",
-    "plan.yearly": "Anual: 14.800 JPY (2 meses gratis)",
+    "plan.monthly": "Mensual: 7,99 € + impuestos",
+    "plan.yearly": "Anual: 79,90 € + impuestos (2 meses gratis)",
     "plan.comingSoon": "El plan Familia estará disponible próximamente.",
     "plan.guestNote": "Para comprar es necesario que una persona adulta cree antes una cuenta.",
     "plan.afterBuyNote": "El pago debe realizarlo una persona adulta. Una vez completado, se aplicará en la aplicación.",

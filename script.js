@@ -61,14 +61,23 @@ function profileLimit() {
 //    出すと「Mensual: 1.480 JPY」という円建ての購入ボタンをスペイン語圏の保護者に
 //    見せることになる（es-handoff.md §6 が明確に避けるとしている状態）。
 //    価格が決まっていない言語は空のままにしておけば「準備中」が出る。
+// ⚠️ 決済用リンクは、作成後に Managed Payments の有効/無効を変更できない（account-design.md §10-11）。
+//    リンクを作り直すときは、作成画面の「Managed Payments を有効にする」の状態を必ず確認すること。
+//    アカウント設定では「デフォルトで有効化」がオンなので、放っておくと有効なリンクができる。
 const STRIPE_PAYMENT_LINKS_BY_LOCALE = {
+  // 日本は Managed Payments を使わない（=自分がマーチャントオブレコード）。
+  // 国内取引なのでVATの問題がなく、日本国内販売は Managed Payments の税務対応の対象外。
+  // 3.5%の手数料が乗るだけで利点がないため（account-design.md §9-3・§10-10）。
   ja: {
-    monthly: "https://buy.stripe.com/fZudRaeqC067gwq9tK7kc00", // 月払い ¥1,480
-    yearly: "https://buy.stripe.com/cNi9AU0zM4mn1BwaxO7kc01", // 年払い ¥14,800（2か月ぶん無料）
+    monthly: "https://buy.stripe.com/eVqfZi96i9GH7ZUdK07kc05", // 月払い ¥1,480 / MP無効
+    yearly: "https://buy.stripe.com/fZu14oeqCdWXbc66hy7kc06", // 年払い ¥14,800（2か月ぶん無料）/ MP無効
   },
-  // スペイン語圏の価格は未定（account-design.md §8-2 のPPP調整が前提）。
-  // 対象国・通貨・現地の表示義務が決まるまでは空のままにする。
-  es: { monthly: "", yearly: "" },
+  // 海外は Managed Payments を使う（=Stripeがマーチャントオブレコード）。
+  // VAT/IVA の登録・申告義務を負わずに済む（account-design.md §9-3）。
+  es: {
+    monthly: "https://buy.stripe.com/28E4gA5U67yzfsm7lC7kc02", // 月払い €7.99 / MP有効
+    yearly: "https://buy.stripe.com/3cI00k96i6uveoicFW7kc03", // 年払い €79.90（2か月ぶん無料）/ MP有効
+  },
 };
 
 function stripePaymentLinks() {
@@ -206,6 +215,18 @@ document.getElementById("announce-modal-overlay").addEventListener("click", (e) 
   dismissAnnounceModal(document.getElementById("announce-modal-overlay").dataset.itemId);
 });
 
+// Stripe の決済画面の言語。
+// ⚠️ 既定では「顧客のブラウザの言語」に合わせるため、スペイン語版アプリを使っていても
+//    ブラウザが日本語なら決済画面が日本語で出てしまう（2026-08-21 に実際に発生）。
+//    アプリの言語に合わせて locale を明示し、アプリと決済画面の言語を一致させる。
+// `ja` / `en` / `es` はいずれも Stripe のサポート対象ロケール。
+// スペイン語は `es`（スペイン）と `es-419`（ラテンアメリカ）に分かれるが、
+// 市場軸をスペイン中心に置いているため `es` を使う（es-market-research.md §8 論点①）。
+function stripeCheckoutLocale() {
+  const locale = getLocale();
+  return ["ja", "en", "es"].includes(locale) ? locale : "en";
+}
+
 // Payment Link に「どの世帯の支払いか」を伝えるURLを組み立てる。
 // client_reference_id が webhook（functions/index.js）で世帯の特定に使われる。
 function buildUpgradeUrl(link) {
@@ -213,6 +234,7 @@ function buildUpgradeUrl(link) {
   const sep = link.includes("?") ? "&" : "?";
   let url = `${link}${sep}client_reference_id=${encodeURIComponent(fbCurrentUser.uid)}`;
   if (fbCurrentUser.email) url += `&prefilled_email=${encodeURIComponent(fbCurrentUser.email)}`;
+  url += `&locale=${stripeCheckoutLocale()}`;
   return url;
 }
 
