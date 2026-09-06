@@ -1522,24 +1522,36 @@ function genSub1() {
     hint: t("math.sub1.hint", { a, b }), explain };
 }
 
+// 2桁の加減算は「前（大きい位）から順に分解して足し引きする」説明にしている。
+// くり上がり／くり下がりという人工的な規則ではなく、数の分解と合成で説明する。
+// ⚠️ 1桁の add1/sub1 が既に分解方式（"{a}は 10と{aOnes}"）なので、それに揃えたもの。
+//    以前は2桁だけ「十の位に1くり上げる」という筆算の説明で、桁が上がると
+//    説明の考え方が急に変わっていた（2026-09-06 修正）。
 function genAdd2() {
   const a = randInt(10, 99), b = randInt(10, 99);
-  const aOnes = a % 10, bOnes = b % 10;
-  const aTens = Math.floor(a / 10), bTens = Math.floor(b / 10);
-  const onesSum = aOnes + bOnes;
-  const params = { aOnes, bOnes, onesSum, aTens, bTens, tensSum: aTens + bTens, tensSumCarry: aTens + bTens + 1, sum: a + b };
-  const explain = onesSum >= 10
-    ? t("math.add2.explainCarry", params)
-    : t("math.add2.explainPlain", params);
+  const bOnes = b % 10;
+  const bTensVal = Math.floor(b / 10) * 10;
+  const mid = a + bTensVal;
+  const params = { a, b, bOnes, bTensVal, mid, sum: a + b };
+  // b がちょうど何十のときは分解する必要がない。
+  const explain = bOnes === 0
+    ? t("math.add2.explainRound", params)
+    : t("math.add2.explainSplit", params);
   return { text: `${a} ＋ ${b} = ?`, answer: String(a + b), type: "number",
     hint: t("math.add2.hint"), explain };
 }
 
 function genSub2() {
   const a = randInt(20, 99), b = randInt(10, a - 1);
+  const bOnes = b % 10;
+  const bTensVal = Math.floor(b / 10) * 10;
+  const mid = a - bTensVal; // b <= a-1 なので必ず 0 より大きい
+  const params = { a, b, bOnes, bTensVal, mid, diff: a - b };
+  const explain = bOnes === 0
+    ? t("math.sub2.explainRound", params)
+    : t("math.sub2.explainSplit", params);
   return { text: `${a} － ${b} = ?`, answer: String(a - b), type: "number",
-    hint: t("math.sub2.hint"),
-    explain: t("math.sub2.explain", { a, b, diff: a - b }) };
+    hint: t("math.sub2.hint"), explain };
 }
 
 function genMul2() {
@@ -1574,8 +1586,10 @@ function genAdd3() {
 }
 
 // 3〜4桁のひき算を、位ごとに くり下がりの有無を示しながら説明する。
-// genAdd2 の explainCarry（一の位→十の位の1回のくり上がり）を、
-// 桁数可変・複数回のくり下がりに対応させたもの。
+// ⚠️ これは筆算の考え方のまま（2026-08-13 実装）。
+//    2桁の genAdd2/genSub2 は 2026-09-06 に「前から分解して計算する」形に変えたので、
+//    桁が上がるとまた考え方が変わる状態になっている（hint-explain-audit.md の P8）。
+//    揃えるなら、この関数ごと作り直すことになる。未対応。
 const SUB3_PLACE_KEYS = ["math.placeOnes", "math.placeTens", "math.placeHundreds", "math.placeThousands"];
 function subtractStepsExplain(a, b) {
   const digitAt = (n, i) => Math.floor(n / 10 ** i) % 10;
