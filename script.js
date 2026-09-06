@@ -1522,36 +1522,56 @@ function genSub1() {
     hint: t("math.sub1.hint", { a, b }), explain };
 }
 
-// 2桁の加減算は「前（大きい位）から順に分解して足し引きする」説明にしている。
-// くり上がり／くり下がりという人工的な規則ではなく、数の分解と合成で説明する。
-// ⚠️ 1桁の add1/sub1 が既に分解方式（"{a}は 10と{aOnes}"）なので、それに揃えたもの。
-//    以前は2桁だけ「十の位に1くり上げる」という筆算の説明で、桁が上がると
-//    説明の考え方が急に変わっていた（2026-09-06 修正）。
+// 数を位ごとに分けた配列を返す。0の位はとばす。287 → [200, 80, 7]
+function placeParts(n) {
+  const s = String(n);
+  const parts = [];
+  for (let i = 0; i < s.length; i++) {
+    const d = Number(s[i]);
+    if (d !== 0) parts.push(d * 10 ** (s.length - 1 - i));
+  }
+  return parts;
+}
+
+// 加減算の解説を「たす数／ひく数を位ごとに分け、大きいほうから順に足し引きする」形で作る。
+// くり上がり・くり下がりという人工的な規則を使わず、数の分解と合成だけで説明する。
+//
+// ⚠️ 2桁〜4桁で共通の関数にしてある。桁ごとに別実装にすると、また考え方がずれるため
+//    （hint-explain-audit.md の P8。実際に「1桁は分解・2桁は筆算」になっていた）。
+//    1桁の add1/sub1 は10の合成が主役で説明の形が違うので、そのまま。
+function stepwiseAddSubExplain(a, b, isAdd) {
+  const parts = placeParts(b);
+  const sep = t("common.sentenceSep");
+  const lines = [];
+  // ちょうど何十・何百のときは分解の説明が要らない（「300は 300」になってしまう）
+  if (parts.length > 1) {
+    // 並列の言い方は言語で違う。日本語は「AとBとC」、スペイン語は「A, B y C」（yは最後だけ）。
+    const listSep = t("math.stepwise.listSep");
+    const lastSep = t("math.stepwise.and");
+    const listed = parts.length === 2
+      ? parts.join(lastSep)
+      : parts.slice(0, -1).join(listSep) + lastSep + parts[parts.length - 1];
+    lines.push(t(isAdd ? "math.stepwise.introAdd" : "math.stepwise.introSub", { b, parts: listed }));
+  }
+  let cur = a;
+  for (const part of parts) {
+    const next = isAdd ? cur + part : cur - part;
+    lines.push(t(isAdd ? "math.stepwise.stepAdd" : "math.stepwise.stepSub", { cur, part, next }));
+    cur = next;
+  }
+  return lines.join(sep);
+}
+
 function genAdd2() {
   const a = randInt(10, 99), b = randInt(10, 99);
-  const bOnes = b % 10;
-  const bTensVal = Math.floor(b / 10) * 10;
-  const mid = a + bTensVal;
-  const params = { a, b, bOnes, bTensVal, mid, sum: a + b };
-  // b がちょうど何十のときは分解する必要がない。
-  const explain = bOnes === 0
-    ? t("math.add2.explainRound", params)
-    : t("math.add2.explainSplit", params);
   return { text: `${a} ＋ ${b} = ?`, answer: String(a + b), type: "number",
-    hint: t("math.add2.hint"), explain };
+    hint: t("math.stepwise.hintAdd"), explain: stepwiseAddSubExplain(a, b, true) };
 }
 
 function genSub2() {
   const a = randInt(20, 99), b = randInt(10, a - 1);
-  const bOnes = b % 10;
-  const bTensVal = Math.floor(b / 10) * 10;
-  const mid = a - bTensVal; // b <= a-1 なので必ず 0 より大きい
-  const params = { a, b, bOnes, bTensVal, mid, diff: a - b };
-  const explain = bOnes === 0
-    ? t("math.sub2.explainRound", params)
-    : t("math.sub2.explainSplit", params);
   return { text: `${a} － ${b} = ?`, answer: String(a - b), type: "number",
-    hint: t("math.sub2.hint"), explain };
+    hint: t("math.stepwise.hintSub"), explain: stepwiseAddSubExplain(a, b, false) };
 }
 
 function genMul2() {
@@ -1565,14 +1585,6 @@ function genMul2() {
 // ===== 算数（小学3年生・新しく習う内容）=====
 // 参考: 3年生の新出単元は わり算／3〜4桁のたし算ひき算／2桁×1桁のかけ算／
 // 小数のたし算ひき算の導入／同分母の分数のたし算ひき算（通分は5年生）
-function decompose(n) {
-  const thousands = Math.floor(n / 1000) * 1000;
-  const hundreds = Math.floor((n % 1000) / 100) * 100;
-  const tens = Math.floor((n % 100) / 10) * 10;
-  const ones = n % 10;
-  return [thousands, hundreds, tens, ones].filter((x) => x > 0).join("＋") || "0";
-}
-
 function genAdd3() {
   const a = randInt(100, 9000);
   const b = randInt(100, 9000);
@@ -1580,50 +1592,11 @@ function genAdd3() {
     text: `${a} ＋ ${b} = ?`,
     answer: `${a + b}`,
     type: "number",
-    hint: t("math.add3.hint"),
-    explain: t("math.add3.explain", { a, b, aParts: decompose(a), bParts: decompose(b), sum: a + b }),
+    hint: t("math.stepwise.hintAdd"),
+    explain: stepwiseAddSubExplain(a, b, true),
   };
 }
 
-// 3〜4桁のひき算を、位ごとに くり下がりの有無を示しながら説明する。
-// ⚠️ これは筆算の考え方のまま（2026-08-13 実装）。
-//    2桁の genAdd2/genSub2 は 2026-09-06 に「前から分解して計算する」形に変えたので、
-//    桁が上がるとまた考え方が変わる状態になっている（hint-explain-audit.md の P8）。
-//    揃えるなら、この関数ごと作り直すことになる。未対応。
-const SUB3_PLACE_KEYS = ["math.placeOnes", "math.placeTens", "math.placeHundreds", "math.placeThousands"];
-function subtractStepsExplain(a, b) {
-  const digitAt = (n, i) => Math.floor(n / 10 ** i) % 10;
-  const len = String(a).length;
-  let borrowIn = 0;
-  const lines = [];
-  for (let i = 0; i < len; i++) {
-    const place = t(SUB3_PLACE_KEYS[i]);
-    const bot = digitAt(b, i);
-    const hadBorrowIn = borrowIn > 0;
-    // 位の数字が0で、さらに下の位への貸し出し分も差し引く場合、そのままだと負の数になる。
-    // 「-1」のようなマイナスをそのまま見せると小学生には分からないので、10を足して
-    // 正しい1桁の数字（＝さらに上の位からも借りている状態）にそろえる。
-    let top = digitAt(a, i) - borrowIn;
-    let cascaded = false;
-    if (top < 0) {
-      top += 10;
-      cascaded = true;
-    }
-    if (top < bot) {
-      const borrowedTop = top + 10;
-      lines.push(t("math.sub3.stepBorrowOut", { place, top, bot, borrowedTop, digit: borrowedTop - bot }));
-      borrowIn = 1;
-    } else if (cascaded || hadBorrowIn) {
-      lines.push(t("math.sub3.stepBorrowIn", { place, top, bot, digit: top - bot }));
-      borrowIn = cascaded ? 1 : 0;
-    } else {
-      lines.push(t("math.sub3.step", { place, top, bot, digit: top - bot }));
-      borrowIn = 0;
-    }
-  }
-  const sep = t("common.sentenceSep");
-  return `${lines.join(sep)}${sep}${t("math.sub3.final", { a, b, diff: a - b })}`;
-}
 
 function genSub3() {
   let a = randInt(100, 9000);
@@ -1634,8 +1607,8 @@ function genSub3() {
     text: `${a} － ${b} = ?`,
     answer: `${a - b}`,
     type: "number",
-    hint: t("math.sub3.hint"),
-    explain: subtractStepsExplain(a, b),
+    hint: t("math.stepwise.hintSub"),
+    explain: stepwiseAddSubExplain(a, b, false),
   };
 }
 
