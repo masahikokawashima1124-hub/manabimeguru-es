@@ -54,17 +54,34 @@ function isFeatureUnlocked(name) {
   }
 }
 
-// 無料プランで引けるレアリティ。SR・URはプレミアム限定。
+// 無料プランで引けるのは**夏のN・Rの28種だけ**（2026-09-16 ユーザー決定）。
+// ⚠️ 以前は「N・Rならぜんぶ無料」だった。2026-09-13に四季160体を公開したとき、
+//    無料で引ける枚数が28種から112種へ勝手に4倍になっていた。無料の範囲は
+//    **28種のまま固定する**という判断なので、季節も条件に入れている。
+//    無料の範囲を変えたくなったら FREE_RARITIES と FREE_SEASONS だけを触ること。
 const FREE_RARITIES = ["N", "R"];
+const FREE_SEASONS = ["natsu"];
 
-function isPremiumRarity(rarity) {
-  return !FREE_RARITIES.includes(rarity);
+// カードの季節はIDの接頭辞で決まる（夏だけ接頭辞なし。n1 / aki-n1 / fuyu-n1 / haru-n1）。
+const SEASON_PREFIX = { aki: "aki-", fuyu: "fuyu-", haru: "haru-" };
+
+function cardSeason(card) {
+  for (const season of Object.keys(SEASON_PREFIX)) {
+    if (card.id.startsWith(SEASON_PREFIX[season])) return season;
+  }
+  return "natsu";
 }
 
-// いま引けるカードの母集団。無料プランではSR・URが出ない（出てから鍵をかけると萎えるので、
-// そもそも抽選に混ぜない）。ずかんにはシルエットで並べて、集める目標としては見せ続ける。
+function isPremiumCard(card) {
+  return !FREE_RARITIES.includes(card.rarity) || !FREE_SEASONS.includes(cardSeason(card));
+}
+
+
+// いま引けるカードの母集団。無料プランでは夏のN・R以外が出ない（出てから鍵をかけると
+// 萎えるので、そもそも抽選に混ぜない）。ずかんにはシルエットで並べて、集める目標としては
+// 見せ続ける。**すでに持っているカードは、あとから無料に戻っても取り上げない。**
 function drawableCardPool() {
-  return isPaidPlan() ? RELEASED_CARD_POOL : RELEASED_CARD_POOL.filter((c) => !isPremiumRarity(c.rarity));
+  return isPaidPlan() ? RELEASED_CARD_POOL : RELEASED_CARD_POOL.filter((c) => !isPremiumCard(c));
 }
 
 // 無料プランのプロフィール上限。プレミアムで PROFILE_MAX 人まで増える。
@@ -1183,6 +1200,32 @@ function isCardReleasedHere(card) {
 }
 
 const RELEASED_CARD_POOL = CARD_POOL.filter(isCardReleasedHere);
+// ずかんの並び順＝図鑑番号（No.001〜160）。character-bible.md・SNS・動画の台本が
+// この番号で書かれているので、**カードは末尾に足すこと**（途中に挿すと全部ずれる）。
+// tools/check_card_refs.js が資料側の番号と突き合わせている。
+const CARD_DEX_NO = new Map(CARD_POOL.map((card, i) => [card.id, i + 1]));
+
+function dexNo(card) {
+  return CARD_DEX_NO.get(card.id);
+}
+
+function dexNoLabel(card) {
+  return `No.${String(dexNo(card)).padStart(3, "0")}`;
+}
+
+// ずかんを季節ごとに区切るための並び。CARD_POOL は季節順に並んでいる
+// （夏 No.001〜040／秋 041〜080／冬 081〜120／春 121〜160）。
+const SEASON_ORDER = ["natsu", "aki", "fuyu", "haru"];
+const SEASON_ICON = { natsu: "☀️", aki: "🍁", fuyu: "❄️", haru: "🌸" };
+
+// 公開しているカードを季節ごとにまとめる。⚠️ 公開はロケール別なので、
+// スペイン語版のように夏しか公開していない場合は夏の1組だけが返る。
+function releasedSeasonGroups() {
+  return SEASON_ORDER.map((season) => ({
+    season,
+    cards: RELEASED_CARD_POOL.filter((c) => cardSeason(c) === season),
+  })).filter((g) => g.cards.length > 0);
+}
 
 const GACHA_KEY = "gacha_owned";
 
@@ -1230,6 +1273,37 @@ function getPity() {
   return parseInt(localStorage.getItem(pk(PITY_KEY)) || "0", 10);
 }
 
+// 引きたい季節を選べるようにする（2026-09-16 ユーザー決定）。
+// "all" か季節ID。⚠️ **引ける季節が1つしかないときは選択肢を出さない。**
+// 無料プランは夏しか引けないので、ガチャ画面に🔒付きの季節ボタンが並ぶことになり、
+// それは account-design.md §10-4「子どもがプレイ中に課金を迫られる導線は作らない」に反する。
+const GACHA_SEASON_KEY = "gacha_season";
+
+function gachaSeasonChoices() {
+  const pool = drawableCardPool();
+  const seasons = SEASON_ORDER.filter((season) => pool.some((c) => cardSeason(c) === season));
+  return seasons.length > 1 ? ["all", ...seasons] : seasons;
+}
+
+function getGachaSeason() {
+  const saved = localStorage.getItem(pk(GACHA_SEASON_KEY));
+  const choices = gachaSeasonChoices();
+  // プランが変わって選べる季節が減ることがあるので、毎回いまの選択肢で検算する
+  return choices.includes(saved) ? saved : choices[0];
+}
+
+function setGachaSeason(season) {
+  localStorage.setItem(pk(GACHA_SEASON_KEY), season);
+  markSyncDirty();
+}
+
+// いま引く母集団。プランで引けるカード（drawableCardPool）を、選んだ季節でさらに絞る。
+function gachaPool() {
+  const pool = drawableCardPool();
+  const season = getGachaSeason();
+  return season === "all" || !season ? pool : pool.filter((c) => cardSeason(c) === season);
+}
+
 function setPity(n) {
   localStorage.setItem(pk(PITY_KEY), String(n));
   markSyncDirty();
@@ -1252,7 +1326,8 @@ function rollRarity() {
 
 function drawGachaCard() {
   const owned = getOwnedCards();
-  const pool = drawableCardPool();
+  // 選んだ季節のカードだけを引く。天井（未所持確定）も同じ母集団の中で効かせる
+  const pool = gachaPool();
   const unowned = pool.filter((c) => !owned[c.id]);
   const pityHit = getPity() >= PITY_LIMIT && unowned.length > 0;
 
@@ -1524,19 +1599,60 @@ function openCollectionScreen(returnScreen, scope) {
   // プレミアム限定のうち、まだ持っていない枚数だけを案内する
   const premiumLockedCount = isPaidPlan()
     ? 0
-    : RELEASED_CARD_POOL.filter((c) => isPremiumRarity(c.rarity) && !owned[c.id]).length;
+    : RELEASED_CARD_POOL.filter((c) => isPremiumCard(c) && !owned[c.id]).length;
   const premiumNote = document.getElementById("collection-premium-note");
   if (premiumNote) {
     premiumNote.textContent = premiumLockedCount ? t("collection.premiumNote", { n: premiumLockedCount }) : "";
     premiumNote.classList.toggle("hidden", premiumLockedCount === 0);
   }
 
+  // 季節タブ。160体を1枚のグリッドに流すと、スマホで10画面ぶんスクロールすることになり
+  // 「何を集めているのか」が分からなくなる（2026-09-16 日次QAで発見）。
+  // **一度に1季節だけ出す。**公開が夏だけのロケール（スペイン語版）ではタブを出さない。
+  const groups = releasedSeasonGroups();
+  if (!groups.some((g) => g.season === state.collectionSeason)) {
+    state.collectionSeason = groups[0].season;
+  }
+  const seasonBar = document.getElementById("collection-seasons");
+  seasonBar.classList.toggle("hidden", groups.length < 2);
+  seasonBar.innerHTML = groups
+    .map(({ season, cards }) => {
+      const ownedInSeason = cards.filter((c) => owned[c.id]).length;
+      const active = season === state.collectionSeason ? " active" : "";
+      return `<button type="button" class="collection-season-btn${active}" data-season="${season}">
+        <span class="collection-season-icon" aria-hidden="true">${SEASON_ICON[season]}</span>
+        <span class="collection-season-name">${t(`season.${season}`)}</span>
+        <span class="collection-season-count">${t("collection.seasonProgress", { owned: ownedInSeason, total: cards.length })}</span>
+      </button>`;
+    })
+    .join("");
+  seasonBar.querySelectorAll(".collection-season-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      playClickSound();
+      state.collectionSeason = btn.dataset.season;
+      openCollectionScreen();
+    });
+  });
+
+  const shown = groups.find((g) => g.season === state.collectionSeason).cards;
+  const rangeEl = document.getElementById("collection-season-range");
+  rangeEl.textContent = t("collection.seasonRange", {
+    from: dexNoLabel(shown[0]),
+    to: dexNoLabel(shown[shown.length - 1]),
+  });
+  rangeEl.classList.toggle("hidden", groups.length < 2);
+
   const grid = document.getElementById("collection-grid");
-  grid.innerHTML = RELEASED_CARD_POOL.map((card) => {
+  grid.innerHTML = shown.map((card) => {
     const count = owned[card.id] || 0;
     // すでに持っているカードは、あとから無料プランになっても取り上げない
-    const premium = count === 0 && !isPaidPlan() && isPremiumRarity(card.rarity);
-    return `<div class="collection-card-slot" data-card-id="${card.id}">${renderCardHTML(card, { locked: count === 0, premium, count })}</div>`;
+    const premium = count === 0 && !isPaidPlan() && isPremiumCard(card);
+    // 図鑑番号はカードの「外」に出す。カードの絵には名前が焼き込まれていて、
+    // 上に重ねるとその名前にかぶるため（実機で確認）。
+    return `<div class="collection-card-slot" data-card-id="${card.id}">
+      ${renderCardHTML(card, { locked: count === 0, premium, count })}
+      <span class="collection-dex-no">${dexNoLabel(card)}</span>
+    </div>`;
   }).join("");
 
   grid.querySelectorAll(".collection-card-slot").forEach((slot) => {
@@ -3858,8 +3974,13 @@ function ensureBottomActionVisible(root) {
   const tabBar = document.getElementById("tab-bar");
   if (tabBar.classList.contains("hidden")) return;
   const tabTop = tabBar.getBoundingClientRect().top;
+  // ⚠️ **押せない（disabled）ボタンも対象にする。**「ポイントが足りなくて
+  //    引けない」ときのガチャのボタンがまさにこれで、除いていたせいで
+  //    ボタンと「ポイントがたりないよ」の案内がタブバーの裏に隠れたままだった
+  //    （2026-09-17 日次QAで発見）。押せるかどうかではなく、
+  //    **見えている必要があるか**で選ぶ。
   const actionable = [...root.querySelectorAll("button, a")].filter(
-    (el) => !el.disabled && !el.classList.contains("hidden") && el.offsetParent !== null
+    (el) => !el.classList.contains("hidden") && el.offsetParent !== null
   );
   if (!actionable.length) return;
   const last = actionable[actionable.length - 1];
@@ -3870,7 +3991,12 @@ function ensureBottomActionVisible(root) {
 // 中身がおおむね1画面に収まる想定の画面だけを対象にする。せっていのような
 // 長いスクロール前提の画面まで対象にすると、末尾の無関係なボタンまで
 // 強制的にスクロールしてしまうため、あえて対象を絞っている。
-const FIT_TO_FOLD_SCREENS = ["screen-start", "screen-result", "screen-category"];
+// ⚠️ **画面に行を足したら、その画面をここに入れ忘れていないか確かめること。**
+//    ガチャ画面に季節えらびの行を足したとき（2026-09-16）、320x568で
+//    「ガチャをひく！」がタブバーの裏に45px隠れ、初期表示では見えなくなっていた
+//    （2026-09-17 日次QAで発見）。showScreen() が毎回 scrollTo(0,0) するので、
+//    スクロールで避けても画面に入り直すたびに再発していた。
+const FIT_TO_FOLD_SCREENS = ["screen-start", "screen-result", "screen-category", "screen-gacha"];
 
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach((el) => el.classList.remove("active"));
@@ -3980,10 +4106,50 @@ function openGachaScreen() {
   skipGachaReveal = null;
   document.getElementById("gacha-levelup-box").classList.add("hidden");
   document.getElementById("gacha-insufficient-msg").classList.add("hidden");
+  renderGachaSeasons();
   refreshGachaPointsDisplay();
   // クイズの start と共用にしていたので「10もん がんばろう！」がガチャ画面に出ていた
   setGuide("gacha");
   showScreen("screen-gacha");
+}
+
+function renderGachaSeasons() {
+  const choices = gachaSeasonChoices();
+  const box = document.getElementById("gacha-seasons");
+  const label = document.getElementById("gacha-season-label");
+  // 引ける季節が1つだけなら、選ばせる意味がないので出さない（無料プラン・スペイン語版）
+  const show = choices.length > 1;
+  box.classList.toggle("hidden", !show);
+  label.classList.toggle("hidden", !show);
+  if (!show) {
+    box.innerHTML = ""; // プランが変わって出さなくなったときに、古いボタンを残さない
+    return;
+  }
+
+  const current = getGachaSeason();
+  const owned = getOwnedCards();
+  const pool = drawableCardPool();
+  box.innerHTML = choices
+    .map((season) => {
+      const cards = season === "all" ? pool : pool.filter((c) => cardSeason(c) === season);
+      const got = cards.filter((c) => owned[c.id]).length;
+      const active = season === current ? " active" : "";
+      const icon = season === "all" ? "🎁" : SEASON_ICON[season];
+      return `<button type="button" class="gacha-season-btn${active}" data-season="${season}">
+        <span class="gacha-season-icon" aria-hidden="true">${icon}</span>
+        <span class="gacha-season-name">${t(`season.${season}`)}</span>
+        <span class="gacha-season-count">${t("collection.seasonProgress", { owned: got, total: cards.length })}</span>
+      </button>`;
+    })
+    .join("");
+  box.querySelectorAll(".gacha-season-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      playClickSound();
+      setGachaSeason(btn.dataset.season);
+      renderGachaSeasons();
+      refreshGachaPointsDisplay();
+    });
+  });
 }
 
 function refreshGachaPointsDisplay() {
@@ -3993,8 +4159,9 @@ function refreshGachaPointsDisplay() {
 
   // 「ぜんぶ あつめた」の判定は、いま引ける母集団を基準にする。
   // 無料プランでSR・URが残っていても、引けない以上は集めきったと言ってよい。
+  // 季節を選んでいるときは、その季節を集めきったかで見る（天井もその中で効くため）。
   const owned = getOwnedCards();
-  const allDrawableOwned = drawableCardPool().every((c) => owned[c.id]);
+  const allDrawableOwned = gachaPool().every((c) => owned[c.id]);
   const remaining = allDrawableOwned ? null : Math.max(0, PITY_LIMIT - getPity());
   const hint = document.getElementById("gacha-pity-hint");
   if (remaining === null) hint.textContent = t("gacha.pityDone");
@@ -5493,15 +5660,22 @@ function buildResultSummary(r) {
   });
 
   const bodyLines = [
-    t("summary.intro", { date }),
-    "",
     t("summary.course", { grade, subject: subjectLabel }),
     t("summary.result", { total: r.total, correct: r.correctCount, rate: r.rate }),
     t("summary.earned", { pt: r.sessionStamps }),
     t("summary.total", { grade, total: r.totalStampsAfter }),
   ];
 
-  return { subject: t("summary.subject", { date }), body: bodyLines.join("\n") };
+  // ⚠️ intro（「◯月◯日 の学習成果です。」）を body に含めない。
+  //    subject（「【まなびめぐる】◯月◯日 の学習成果」）と続けて貼ると、
+  //    同じ日付・同じ趣旨の見出しが2行つづく（2026-09-16 日次QAで発見）。
+  //    共有シートは title と text が別の欄なので intro が要るが、
+  //    クリップボードへは subject を見出しにするので intro は要らない。
+  return {
+    subject: t("summary.subject", { date }),
+    intro: t("summary.intro", { date }),
+    body: bodyLines.join("\n"),
+  };
 }
 
 document.getElementById("btn-share-result").addEventListener("click", shareResult);
@@ -5511,12 +5685,13 @@ async function shareResult() {
   const copyBox = document.getElementById("manual-copy-box");
   copyBox.classList.add("hidden");
 
-  const { subject, body } = buildResultSummary(state.lastResult);
+  const { subject, intro, body } = buildResultSummary(state.lastResult);
   const fullText = `${subject}\n\n${body}`;
 
   if (navigator.share) {
     try {
-      await navigator.share({ title: subject, text: body });
+      // 共有シートは title を表示しない送り先もあるので、text 側は intro から始める
+      await navigator.share({ title: subject, text: `${intro}\n\n${body}` });
       feedback.textContent = t("share.done");
       feedback.className = "action-feedback ok";
     } catch (err) {

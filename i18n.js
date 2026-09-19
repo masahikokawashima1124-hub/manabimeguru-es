@@ -308,6 +308,14 @@ const LOCALES = {
     "collection.scopeFamily": "かぞく",
     "collection.countFamily": "かぞく ぜんいんで {owned} / {total} しゅるい あつめた！",
     "collection.premiumNote": "🔒 の {n}まいは プレミアムプランで あつめられるよ",
+    "collection.seasonProgress": "{owned} / {total}",
+    "collection.seasonRange": "{from} 〜 {to}",
+    "gacha.seasonPick": "どの きせつを ひく？",
+    "season.all": "ぜんぶ",
+    "season.natsu": "なつ",
+    "season.aki": "あき",
+    "season.fuyu": "ふゆ",
+    "season.haru": "はる",
     "collection.premiumBadge": "プレミアム",
 
     // --- レアリティ ---
@@ -1036,6 +1044,14 @@ const LOCALES = {
     "collection.scopeFamily": "Familia",
     "collection.countFamily": "¡Entre toda la familia habéis reunido {owned} de {total}!",
     "collection.premiumNote": "Las {n} cartas con 🔒 se consiguen con el plan Premium",
+    "collection.seasonProgress": "{owned} / {total}",
+    "collection.seasonRange": "{from} – {to}",
+    "gacha.seasonPick": "¿De qué estación quieres tirar?",
+    "season.all": "Todas",
+    "season.natsu": "Verano",
+    "season.aki": "Otoño",
+    "season.fuyu": "Invierno",
+    "season.haru": "Primavera",
     "collection.premiumBadge": "Premium",
 
     // --- レアリティ ---
