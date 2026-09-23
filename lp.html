@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Manabimeguru | Estudia un poco, conoce a un espíritu.</title>
-<meta name="description" content="App de estudio para niños y niñas de 1º a 6º de Primaria. Resuelve ejercicios de Matemáticas e Inglés y colecciona cartas de los espíritus de las estaciones. Sin registro y sin instalar nada.">
+<meta name="description" content="App de estudio para niños y niñas de 1º a 6º de Primaria. Resuelve ejercicios de Matemáticas e Inglés y colecciona cartas de los espíritus de las estaciones. Cuenta gratuita (solo un correo electrónico) y sin instalar nada.">
 
 <!-- SNSでの共有プレビュー用。og:image は絶対URLで指定する（相対パスだと一部クローラーがサムネを出せない）。
      生成元は tools/make-og-image.py --locale es（assets/cards-es/ の実物カードを合成）。
@@ -49,7 +49,7 @@
       <b>al día siguiente</b> → <b>a los 3 días</b> → <b>a la semana</b> → <b>a los 20 días</b>.
     </p>
     <a class="cta-btn" href="index.html" data-cta="hero">Probar ahora <span class="arrow">→</span></a>
-    <p class="cta-micro">Sin registro y sin instalar nada. Funciona en el navegador.</p>
+    <p class="cta-micro">Cuenta gratuita, sin instalar nada. Funciona en el navegador.</p>
     <!-- 空いた面積は装飾ではなく判断材料で埋める（日本語版と同じ。詳しくは #trust） -->
     <ul class="hero-proof">
       <li>Sin anuncios</li>
@@ -88,7 +88,7 @@
         <li><span class="k">Asignaturas</span> Matemáticas e Inglés</li>
         <li><span class="k">Cómo se usa</span> Se abre en el navegador. No hay que instalar ninguna aplicación</li>
         <li><span class="k">Dispositivos</span> Tablet, móvil u ordenador</li>
-        <li><span class="k">Para empezar</span> Se puede probar sin registrarse. Si la cosa va en serio, una persona adulta crea una cuenta: así se guarda el progreso y cada hijo o hija tiene su propio perfil</li>
+        <li><span class="k">Para empezar</span> Una persona adulta crea una cuenta gratuita (solo un correo electrónico); así se guarda el progreso y cada hijo o hija tiene su propio perfil</li>
       </ul>
       <p class="fact-note">
         Al indicar el curso, los ejercicios se centran en ese nivel y se mezclan repasos del curso anterior.
@@ -343,8 +343,7 @@
 
         <details class="faq-item">
           <summary>Si cambio de móvil o de navegador, ¿se pierde todo?</summary>
-          <p><strong>Si habéis creado una cuenta, no se pierde.</strong> Las cartas y el progreso se guardan solos en la nube, y basta con entrar con la misma cuenta desde el dispositivo nuevo. Crear la cuenta es gratis.</p>
-          <p>En cambio, <strong>si se usa solo en modo de prueba sin registrarse, todo queda guardado únicamente en ese navegador.</strong> Al borrar los datos del navegador o al cambiar de dispositivo no se puede recuperar. Si después de probar unos días os parece que va a continuar, lo mejor es crear la cuenta pronto: las cartas conseguidas hasta ese momento se conservan.</p>
+          <p><strong>No se pierde.</strong> Desde el momento en que se crea la cuenta (gratis), las cartas y el progreso se guardan solos en la nube. Basta con entrar con la misma cuenta desde el dispositivo nuevo para seguir donde lo dejasteis.</p>
         </details>
 
         <details class="faq-item">
@@ -357,20 +356,20 @@
   </section>
 
   <!-- A（Action）─ はじめかた。不安を消したあとに手順を見せ、最後のCTAへつなぐ。
-       文言は実装に合わせている：最初の画面のボタンは i18n の auth.tryAsGuest
-       「Probar sin registrarse」、1回は SESSION_SIZE = 10 問、
-       カード1枚は GACHA_PULL_COST = 10 ポイント。 -->
+       2026-09-23よりアカウント登録が必須になったため、①を「登録なしで試す」から
+       「無料のアカウント登録」に差し替えた（保護者のメールアドレスのみ）。
+       1回は SESSION_SIZE = 10 問、カード1枚は GACHA_PULL_COST = 10 ポイント。 -->
   <section id="start" aria-labelledby="start-h">
     <div class="wrap">
       <span class="eyebrow">Cómo empezar</span>
-      <h2 id="start-h">Puedes probarlo antes<br>de decidir si te registras.</h2>
+      <h2 id="start-h">En 3 pasos, listo<br>para empezar hoy.</h2>
 
       <ol class="start-flow">
         <li class="start-step">
           <span class="start-num" aria-hidden="true">1</span>
           <div class="start-body">
-            <h3>Entrar y probar</h3>
-            <p>En la primera pantalla se elige «Probar sin registrarse». No hace falta correo electrónico.</p>
+            <h3>Crear una cuenta (gratis)</h3>
+            <p>Solo el correo electrónico de una persona adulta. No pedimos datos del niño o la niña.</p>
           </div>
         </li>
         <li class="start-step">
@@ -389,22 +388,9 @@
         </li>
       </ol>
 
-      <p class="start-divider"><span>Hasta aquí, sin registrarse</span></p>
-
-      <div class="start-later">
-        <span class="start-later-tag">Más adelante</span>
-        <div class="start-body">
-          <h3>Si veis que la cosa continúa, cread una cuenta (gratis)</h3>
-          <p>
-            El progreso se guarda fuera del dispositivo y se puede seguir en otro.
-            <strong>Las cartas y los puntos que ya haya reunido se mantienen.</strong>
-          </p>
-        </div>
-      </div>
-
       <p class="fact-note">
-        Sin registrarse también se puede usar, pero todo queda guardado únicamente en el navegador
-        de ese dispositivo. Si se borran los datos del navegador o se cambia de dispositivo, se pierde.
+        Desde el momento en que se crea la cuenta, las cartas y el progreso se guardan
+        solos en la nube. Si cambiáis de móvil o de navegador, basta con entrar con la misma cuenta.
       </p>
 
       <div class="cta-row">
@@ -421,7 +407,7 @@
     <img class="closing-figure" src="assets/characters/hanabi-happy.webp" width="150" height="170"
          loading="lazy" alt="Espíritu Hanabi sonriendo">
     <h2 id="closing-h">Pruébalo un momento.</h2>
-    <p class="hero-sub" style="color:var(--text-muted); max-width:34ch;">No hace falta registrarse ni instalar nada.</p>
+    <p class="hero-sub" style="color:var(--text-muted); max-width:34ch;">Solo una cuenta gratuita. No hace falta instalar nada.</p>
     <a class="cta-btn" href="index.html" data-cta="closing">Probar ahora <span class="arrow">→</span></a>
   </div>
 </section>
